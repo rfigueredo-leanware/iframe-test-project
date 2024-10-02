@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PostMessage Test</title>
+  <script>
+
+    const whitelist = ['https://rfigueredo-leanware.github.io/',  'https://refactor-legends.web.app/', 'http://localhost:3000', 'http://localhost:4000'];
+    // Listen for messages from the iframe
+    window.addEventListener('message', (event) => {
+      // Ensure the message comes from the expected origin
+      if (whitelist.includes( event.origin)) {
+        // Extract the token from the message
+        const { token } = event.data;
+        if (token) {
+          console.log('Access token received:', token);
+          document.getElementById('token-display').textContent = `Token: ${token}`;
+        } else {
+          console.error('Token not received');
+        }
+      } else {
+        console.error('Origin not allowed:', event.origin);
+      }
+    });
+  </script>
+</head>
+<body>
+  <h1>Handle Open Table Test</h1>
+  <div id="token-display">Waiting for token...</div>
+</body>
+</html>
