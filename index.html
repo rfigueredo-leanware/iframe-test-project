@@ -5,13 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PostMessage Test</title>
   <script>
+    // Define the parent URL as a constant
+    const PARENT_URL = 'https://refactor-legends.web.app';
+    const whitelist = [PARENT_URL];
 
-    const whitelist = ['https://rfigueredo-leanware.github.io',  'https://refactor-legends.web.app',];
-    // Listen for messages from the iframe
+    function isIframe() {
+      return window.self !== window.top; // Detect if it's an iframe
+    }
+
+    window.onload = () => {
+      if (isIframe()) {
+        // Running inside an iframe, notify parent
+        console.log("Running inside an iframe, notifying parent...");
+        window.parent.postMessage({ iframeLoaded: true }, PARENT_URL); // Use PARENT_URL
+      } else {
+        // Running as a new window, handle logic directly (if needed)
+        console.log("Running as a standalone window, awaiting token...");
+        // Here you can handle logic like getting the token from a backend or other sources
+      }
+    };
+
+    // Listen for token messages (whether in iframe or window)
     window.addEventListener('message', (event) => {
-      // Ensure the message comes from the expected origin
-      if (whitelist.includes( event.origin)) {
-        // Extract the token from the message
+      if (whitelist.includes(event.origin)) {
         const { token } = event.data;
         if (token) {
           console.log('Access token received:', token);
