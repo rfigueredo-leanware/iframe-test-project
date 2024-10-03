@@ -12,13 +12,14 @@
 
       // Listen for token messages from the parent window
       window.addEventListener('message', (event) => {
-        const allowedOrigin = 'https://refactor-legends.web.app'; // Set the allowed origin manually
-        if (event.origin === allowedOrigin) {
+        const whitelist = ['https://refactor-legends.web.app', 'http://localhost:5173', 'http://localhost:4000'];
+        if (whitelist.includes(event.origin)) {
           const { token } = event.data;
           if (token) {
             console.log('Access token received:', token);
             document.getElementById('token-display').textContent = `Token: ${token}`;
           } else {
+            document.getElementById('token-display').textContent = 'Token not received';
             console.error('Token not received');
           }
         } else {
