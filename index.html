@@ -7,16 +7,13 @@
   <script>
     window.onload = () => {
       // We assume the page is always running inside an iframe
-      const PARENT_URL = window.parent.location.origin; // Dynamically get the parent origin
-      const whitelist = [PARENT_URL];
-
-      // Notify parent that iframe is loaded
       console.log("Running inside an iframe, notifying parent...");
-      window.parent.postMessage({ iframeLoaded: true }, PARENT_URL); // Notify parent
+      window.parent.postMessage({ iframeLoaded: true }, "*"); // Notify the parent without accessing origin
 
       // Listen for token messages from the parent window
       window.addEventListener('message', (event) => {
-        if (whitelist.includes(event.origin)) {
+        const allowedOrigin = 'https://refactor-legends.web.app'; // Set the allowed origin manually
+        if (event.origin === allowedOrigin) {
           const { token } = event.data;
           if (token) {
             console.log('Access token received:', token);
