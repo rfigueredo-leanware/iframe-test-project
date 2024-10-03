@@ -5,40 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PostMessage Test</title>
   <script>
-    // Define the parent URL as a constant
-    const PARENT_URL = 'https://refactor-legends.web.app';
-    const whitelist = [PARENT_URL];
-
-    function isIframe() {
-      return window.self !== window.top; // Detect if it's an iframe
-    }
-
     window.onload = () => {
-      if (isIframe()) {
-        // Running inside an iframe, notify parent
-        console.log("Running inside an iframe, notifying parent...");
-        window.parent.postMessage({ iframeLoaded: true }, PARENT_URL); // Use PARENT_URL
-      } else {
-        // Running as a new window, handle logic directly (if needed)
-        console.log("Running as a standalone window, awaiting token...");
-        // Here you can handle logic like getting the token from a backend or other sources
-      }
-    };
+      // We assume the page is always running inside an iframe
+      const PARENT_URL = window.parent.location.origin; // Dynamically get the parent origin
+      const whitelist = [PARENT_URL];
 
-    // Listen for token messages (whether in iframe or window)
-    window.addEventListener('message', (event) => {
-      if (whitelist.includes(event.origin)) {
-        const { token } = event.data;
-        if (token) {
-          console.log('Access token received:', token);
-          document.getElementById('token-display').textContent = `Token: ${token}`;
+      // Notify parent that iframe is loaded
+      console.log("Running inside an iframe, notifying parent...");
+      window.parent.postMessage({ iframeLoaded: true }, PARENT_URL); // Notify parent
+
+      // Listen for token messages from the parent window
+      window.addEventListener('message', (event) => {
+        if (whitelist.includes(event.origin)) {
+          const { token } = event.data;
+          if (token) {
+            console.log('Access token received:', token);
+            document.getElementById('token-display').textContent = `Token: ${token}`;
+          } else {
+            console.error('Token not received');
+          }
         } else {
-          console.error('Token not received');
+          console.error('Origin not allowed:', event.origin);
         }
-      } else {
-        console.error('Origin not allowed:', event.origin);
-      }
-    });
+      });
+    };
   </script>
 </head>
 <body>
